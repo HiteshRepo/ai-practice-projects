@@ -75,8 +75,8 @@ ai-practice-projects/
 
 ## License
 
-[Include license information here]
+[TODO]
 
 ## Contributing
 
-[Include contribution guidelines here]
+[TODO]
