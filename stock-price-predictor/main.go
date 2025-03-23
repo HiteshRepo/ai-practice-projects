@@ -10,6 +10,7 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/packages/param"
 	"github.com/pkg/errors"
 
 	openaipkg "stock-price-predictor/openai"
@@ -43,6 +44,23 @@ const (
 	META is not for the weak-kneed So, sugar, what's it going to be? For AAPL, my advice is to stay on that gravy train. 
 	As for META, keep your spurs on and be ready for the rally.
 	`
+)
+
+const (
+	// Determines creativity/daring-ness of the response.
+	Temperature = 1.1
+
+	// Higher the value, more topics get covered in the response.
+	// Lower the value, more focused the response.
+	PresencePenalty = 0.0
+
+	// Higher the value, less repetitive phrases used in the response.
+	// Lower the value, more repetitive phrases 'maybe' used in the response.
+	FrequencyPenalty = 0.0
+
+	// Use carefully, as it can stop the response generation abruptly.
+	// finish_reason = "length" as against "stop".
+	// MaxTokens   = 150
 )
 
 type envvars struct {
@@ -129,8 +147,11 @@ func generateReport(
 	chatResp, err := openaiClient.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
-			Messages: messages,
-			Model:    openai.AudioModelGPT4oMiniTranscribe,
+			Messages:         messages,
+			Model:            openai.AudioModelGPT4oMiniTranscribe,
+			Temperature:      param.NewOpt(Temperature),
+			PresencePenalty:  param.NewOpt(PresencePenalty),
+			FrequencyPenalty: param.NewOpt(FrequencyPenalty),
 		})
 	if err != nil {
 		log.Fatalln("failed to generate stock report", err)
