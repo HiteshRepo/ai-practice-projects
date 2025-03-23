@@ -24,9 +24,19 @@ A command-line tool that generates concise stock performance reports and buy/hol
 - Supports zero-shot and few-shot analysis approaches
 - Generates concise reports with buy/hold recommendations
 
+### [Image Generator](./image-generator/README.md)
+
+A command-line tool that generates images from text descriptions using OpenAI's DALL-E models.
+
+**Key Features:**
+- Connects to OpenAI's DALL-E 3 API
+- Generates high-quality images based on text prompts
+- Saves generated images as PNG files locally
+- Supports customizable image parameters (size, style)
+
 ## Common Technologies
 
-Both projects are built with:
+All projects are built with:
 - Go 1.24+
 - OpenAI API integration
 - Environment-based configuration
@@ -63,6 +73,12 @@ ai-practice-projects/
 │   └── polygon/                   # Polygon.io client implementation
 │       ├── client.go
 │       └── models.go
+├── image-generator/               # Image Generator project
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── sample.env                 # Environment variables template
+│   └── openai/                    # OpenAI client implementation
+│       └── client.go
 └── prompts/                       # Additional prompt resources
 ```
 
@@ -72,6 +88,7 @@ ai-practice-projects/
 - API keys for the services used by each project:
   - [OpenAI](https://platform.openai.com/) - for all projects
   - [Polygon.io](https://polygon.io/) - for Stock Price Predictor
+  - OpenAI DALL-E access - for Image Generator
 
 ## License
 
