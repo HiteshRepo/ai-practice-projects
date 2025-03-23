@@ -6,8 +6,11 @@ A command-line tool that generates concise stock performance reports and buy/hol
 
 Stock Price Predictor is a Go application that:
 1. Fetches the last 3 days of stock price data from Polygon.io
-2. Analyzes the data using OpenAI's GPT model
-3. Generates a concise report (max 150 words) with a buy/hold recommendation
+2. Analyzes the data using OpenAI's GPT-4o Mini model
+3. Supports two analysis approaches:
+   - Zero-shot: Direct analysis with a system prompt
+   - Few-shot: Analysis with example outputs to influence style
+4. Generates a concise report (max 150 words) with a buy/hold recommendation
 
 ## Prerequisites
 
@@ -49,7 +52,7 @@ Stock Price Predictor is a Go application that:
 
 ### Basic Usage
 
-Run the application with default settings (analyzes Microsoft stock):
+Run the application with default settings (analyzes Microsoft stock with zero-shot approach):
 
 ```
 go run main.go
@@ -65,6 +68,24 @@ go run main.go -ticks AAPL
 
 # Analyze multiple stocks (comma-separated, no spaces)
 go run main.go -ticks AAPL,GOOGL,AMZN,TSLA
+```
+
+### Choosing Analysis Approach
+
+The application supports two different approaches for generating reports:
+
+```
+# Zero-shot approach (default)
+go run main.go -approach=zero
+
+# Few-shot approach (uses examples to influence style)
+go run main.go -approach=few
+```
+
+You can combine both flags:
+
+```
+go run main.go -ticks=NVDA,AMD -approach=few
 ```
 
 ### Building the Application
@@ -85,23 +106,49 @@ Then run it:
 
 1. The application fetches daily price data (open, high, low, close, volume) for the specified stocks over the past 3 days from Polygon.io.
 2. It formats this data into a readable table.
-3. The formatted data is sent to OpenAI's GPT model along with a prompt to analyze the stock's performance.
-4. The AI generates a concise report (under 150 words) that includes:
+3. The formatted data is sent to OpenAI's GPT-4o Mini model along with a prompt to analyze the stock's performance.
+4. Depending on the approach selected:
+   - **Zero-shot approach**: The data is sent directly to the model with a system message.
+   - **Few-shot approach**: The data is sent along with example outputs to influence the style of the response.
+5. The AI generates a concise report (under 150 words) that includes:
    - A summary of the stock's recent performance
    - A recommendation to buy or hold the stock
-5. The report is displayed in the console.
-6. The application tracks and reports the total number of tokens used for the OpenAI API calls.
+6. The report is displayed in the console.
+7. The application tracks and reports the total number of tokens used for the OpenAI API calls (prompt tokens, completion tokens, and total).
 
 ## Example Output
 
+### Zero-shot approach:
 ```
-AAPL: Apple's stock has shown moderate volatility over the past three days. 
-Opening at $170.25, it experienced a slight dip to $168.90 before recovering to close at $171.15 on the final day. 
-The trading volume has remained consistent, indicating stable investor interest. 
-The stock has demonstrated resilience despite market fluctuations, with a positive upward trend forming by the end of the period. 
-Given the stock's recovery pattern and the company's strong market position, I recommend a BUY for Apple shares at this time.
+go run main.go -ticks=MSFT,TSLA -approach=zero
 
-Total token used: 245
+The stock MSFT opened at $385.74 on March 20th and closed at $386.84, with a high of $391.79 and a low of $383.28. The trading volume for the day was over 17 million shares, and the volume-weighted average price (VWAP) was $387.14. On March 21st, Microsoft opened at $383.21 and closed at $391.26, with a high of $391.74 and a low of $382.80. The trading volume was over 37 million shares.
+
+Tesla (TSLA) opened at $233.34 on March 20th and closed at $236.26, with a high of $238.00 and a low of $230.05. The trading volume was over 98 million shares, and the VWAP was $234.31. On March 21st, Tesla opened at $234.99 and closed at $248.71, with a high of $249.52 and a low of $234.55. The trading volume was over 128 million shares.
+
+From the data, Microsoft stocks have shown a gradual increase, while Tesla stocks have seen a significant rise. For investors looking for stability, Microsoft may be a good option. However, for those willing to take on higher risk, the increased activity in Tesla may present potential opportunities. It is recommended to hold Microsoft and to buy Tesla.
+
+i/p token used: 431
+o/p token used: 294
+Total token used: 725
+```
+
+### Few-shot approach:
+```
+go run main.go -ticks=MSFT,TSLA -approach=few
+
+MSFT STOCK PERFORMANCE:
+Microsoft (MSFT) has had a volatile three-day period. The stock opened at $235.74 on day one, rose to $313.79 on day three, and closed at $313.96. On the last day, MSFT opened at $285.74, but experienced a sharp drop to $283.28, and closed at $283.96. The volume on day three was almost three times higher than the previous day. A volatile day for MSFT!
+
+TSLA STOCK PERFORMANCE:
+Tesla (TSLA) had a rollercoaster week. The stock opened at $223.34 on day one, but it closed at $245.46 due to a significant gain. However, the stock on day two declined by nearly $11, at $238.67, before a surge on the third day. On the last day, TSLA opened at $249.52, dipped to $244.55, and finally closed $248.71.
+
+RECOMMENDATION:
+Hold on to MSFT and TSLA for the long term. They have both been quite volatile, but the long-term outlook is promising.
+
+i/p token used: 920
+o/p token used: 237
+Total token used: 1157
 ```
 
 ## Limitations
