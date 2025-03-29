@@ -1,2 +1,5 @@
 .env
 prompts/
+crawler-py/
+test/
+tests/

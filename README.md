@@ -41,7 +41,7 @@ A command-line tool that checks if text content is safe or contains potentially 
 **Key Features:**
 - Analyzes text input using OpenAI's moderation API
 - Identifies specific categories of harmful content
-- Supports single-line text input (with planned support for multi-line text, URLs, and files)
+- Supports multiple input types: single-line text, multi-line text, URLs, and files
 - Provides clear feedback on content safety
 
 ## Common Technologies
