@@ -34,6 +34,16 @@ A command-line tool that generates images from text descriptions using OpenAI's 
 - Saves generated images as PNG files locally
 - Supports customizable image parameters (size, style)
 
+### [Content Moderator](./content-moderator/README.md)
+
+A command-line tool that checks if text content is safe or contains potentially harmful material using OpenAI's moderation API.
+
+**Key Features:**
+- Analyzes text input using OpenAI's moderation API
+- Identifies specific categories of harmful content
+- Supports single-line text input (with planned support for multi-line text, URLs, and files)
+- Provides clear feedback on content safety
+
 ## Common Technologies
 
 All projects are built with:
@@ -74,6 +84,12 @@ ai-practice-projects/
 │       ├── client.go
 │       └── models.go
 ├── image-generator/               # Image Generator project
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── sample.env                 # Environment variables template
+│   └── openai/                    # OpenAI client implementation
+│       └── client.go
+├── content-moderator/             # Content Moderator project
 │   ├── README.md                  # Project documentation
 │   ├── main.go                    # Main application code
 │   ├── sample.env                 # Environment variables template
