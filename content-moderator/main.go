@@ -10,7 +10,9 @@ import (
 	"github.com/openai/openai-go/packages/param"
 	"github.com/pkg/errors"
 
+	"content-moderator/fileops"
 	openaipkg "content-moderator/openai"
+	"content-moderator/scraper"
 )
 
 type envvars struct {
@@ -71,25 +73,48 @@ func main() {
 		fileLoc = *fileLocFlag
 	}
 
-	// TODO: Add support for multi-line text, text from URL, and text from file
-	_ = urlLink
-	_ = fileLoc
-
 	openaiClient := openaipkg.NewOpenAiClient(envs.OpenApiKey)
-
-	res, err := openaiClient.Moderations.New(ctx, openai.ModerationNewParams{
-		Input: openai.ModerationNewParamsInputUnion{
-			OfString: param.NewOpt(content),
-		},
-	})
-	if err != nil {
-		log.Fatalln("failed to check content moderation:", err)
-	}
 
 	// TODO: Add support for multiple results
 	resultLookupIndex := -1
-	if typeOfContent == SingleLineText {
+	var inputContent openai.ModerationNewParamsInputUnion
+
+	switch typeOfContent {
+	case SingleLineText:
 		resultLookupIndex = 0
+
+		inputContent = openai.ModerationNewParamsInputUnion{
+			OfString: param.NewOpt(content),
+		}
+
+	case TextFromURL:
+		content, err := scraper.ScrapeURL(urlLink)
+		if err != nil {
+			log.Fatalln("failed to scrape URL:", err)
+		}
+
+		resultLookupIndex = 0
+		inputContent = openai.ModerationNewParamsInputUnion{
+			OfString: param.NewOpt(content),
+		}
+
+	case TextFromFile:
+		content, err := fileops.ReadFile(fileLoc)
+		if err != nil {
+			log.Fatalln("failed to scrape URL:", err)
+		}
+
+		resultLookupIndex = 0
+		inputContent = openai.ModerationNewParamsInputUnion{
+			OfString: param.NewOpt(content),
+		}
+	}
+
+	res, err := openaiClient.Moderations.New(ctx, openai.ModerationNewParams{
+		Input: inputContent,
+	})
+	if err != nil {
+		log.Fatalln("failed to check content moderation:", err)
 	}
 
 	if res.Results[resultLookupIndex].Flagged {

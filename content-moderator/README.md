@@ -5,7 +5,7 @@ A command-line tool that checks if text content is safe or contains potentially 
 ## Overview
 
 Content Moderator is a Go application that:
-1. Takes text input from various sources (currently single-line text, with planned support for multi-line text, URLs, and files)
+1. Takes text input from various sources (single-line text, multi-line text, URLs, and files)
 2. Sends the content to OpenAI's moderation API
 3. Analyzes the response to determine if the content is safe
 4. If unsafe, identifies specific categories of harmful content (harassment, hate, self-harm, sexual, violence, illicit)
@@ -55,19 +55,19 @@ go run main.go -content "This is some text to check"
 
 ### Content Types
 
-The application supports different types of content input (with some planned for future implementation):
+The application supports different types of content input:
 
 ```
 # Single-line text (default)
 go run main.go -type=single_line_text -content "This is some text to check"
 
-# Multi-line text (planned)
+# Multi-line text
 go run main.go -type=multi_line_text -content "This is some text to check\nThis is a second line"
 
-# Text from URL (planned)
+# Text from URL
 go run main.go -type=text_from_url -url "https://example.com/article"
 
-# Text from file (planned)
+# Text from file
 go run main.go -type=text_from_file -file "path/to/file.txt"
 ```
 
@@ -111,6 +111,6 @@ Your content is flagged as unsafe in categories: [Self Harm Self Harm Intent]
 
 ## Limitations
 
-- Currently only supports single-line text input (support for multi-line text, URLs, and files is planned).
 - Relies on OpenAI's moderation API, which may have rate limits depending on your subscription plan.
 - The moderation API may not catch all forms of harmful content or may flag content that is actually safe in certain contexts.
+- For URL scraping, the tool extracts text content but may not capture all context or nuances from the original webpage.
