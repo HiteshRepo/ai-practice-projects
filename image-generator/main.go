@@ -15,6 +15,13 @@ import (
 	openaipkg "image-generator/openai"
 )
 
+type ImageStyle string
+
+const (
+	DefaultImageStyle ImageStyle = "default"
+	GhibliImageStyle  ImageStyle = "ghibli"
+)
+
 type envvars struct {
 	OpenApiKey string `env:"OPEN_API_KEY"`
 }
@@ -28,29 +35,63 @@ func main() {
 	}
 
 	imagePromptFlag := flag.String("image-prompt", "", "describe the image you want to generate")
+	imageStyleFlag := flag.String("image-style", "default", "Supported values: default, ghibli")
+	imagePathFlag := flag.String("image-path", "", "Location of image")
 	flag.Parse()
 
 	if imagePromptFlag == nil {
 		log.Fatalln("image-prompt flag is required")
 	}
 
-	imagePrompt := *imagePromptFlag
+	imageStyle := DefaultImageStyle
+	if imageStyleFlag != nil {
+		imageStyle = ImageStyle(*imageStyleFlag)
+	}
+
+	imagePath := ""
+	if imagePathFlag != nil {
+		imagePath = *imagePathFlag
+	}
 
 	openaiClient := openaipkg.NewOpenAiClient(envs.OpenApiKey)
 
-	respFormat := openai.ImageGenerateParamsResponseFormatB64JSON
+	var (
+		imageResp *openaipkg.ImageGenerationResponse
+		err       error
+	)
 
-	imageResp, err := openaipkg.GenerateImage(ctx, openaiClient, imagePrompt, respFormat)
-	if err != nil {
-		log.Fatalln("failed to generate image", err)
+	switch imageStyle {
+	case GhibliImageStyle:
+		respFormat := openai.ImageEditParamsResponseFormatB64JSON
+
+		imageResp, err = openaipkg.GenerateGhibliStyleImage(ctx, openaiClient, imagePath, respFormat)
+		if err != nil {
+			log.Fatalln("failed to generate image", err)
+		}
+
+		switch respFormat {
+		case openai.ImageEditParamsResponseFormatURL:
+			log.Println("image generated successfully", imageResp.URL)
+		case openai.ImageEditParamsResponseFormatB64JSON:
+			b64JsonToPng(imageResp.B64Json)
+		}
+	default:
+		imagePrompt := *imagePromptFlag
+		respFormat := openai.ImageGenerateParamsResponseFormatB64JSON
+
+		imageResp, err = openaipkg.GenerateImage(ctx, openaiClient, imagePrompt, respFormat)
+		if err != nil {
+			log.Fatalln("failed to generate image", err)
+		}
+
+		switch respFormat {
+		case openai.ImageGenerateParamsResponseFormatURL:
+			log.Println("image generated successfully", imageResp.URL)
+		case openai.ImageGenerateParamsResponseFormatB64JSON:
+			b64JsonToPng(imageResp.B64Json)
+		}
 	}
 
-	switch respFormat {
-	case openai.ImageGenerateParamsResponseFormatURL:
-		log.Println("image generated successfully", imageResp.URL)
-	case openai.ImageGenerateParamsResponseFormatB64JSON:
-		b64JsonToPng(imageResp.B64Json)
-	}
 }
 
 func b64JsonToPng(b64Json string) error {
