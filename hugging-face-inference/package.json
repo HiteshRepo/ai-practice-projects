@@ -1,0 +1,16 @@
+{
+  "name": "hugging-face-inference",
+  "version": "1.0.0",
+  "description": "practice project for hugging face",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node index.js"
+  },
+  "author": "hiteshrepo",
+  "license": "ISC",
+  "dependencies": {
+    "@huggingface/inference": "^3.9.2"
+  },
+  "type": "module"
+}
