@@ -33,6 +33,7 @@ A command-line tool that generates images from text descriptions using OpenAI's 
 - Generates high-quality images based on text prompts
 - Saves generated images as PNG files locally
 - Supports customizable image parameters (size, style)
+- Optional Studio Ghibli-style image generation
 
 ### [Content Moderator](./content-moderator/README.md)
 
