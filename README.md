@@ -1,8 +1,19 @@
 # AI Practice Projects
 
-This repository contains a collection of Go applications that leverage AI capabilities through OpenAI's API for various practical use cases.
+This repository contains a collection of AI-powered applications and tools, including both Go and Node.js projects, that leverage APIs such as OpenAI and Hugging Face for various practical use cases.
 
 ## Projects
+
+### [Hugging Face Inference](./hugging-face-inference/README.md)
+
+A Node.js project demonstrating the use of the Hugging Face Inference API for chat completion, sentiment classification, and translation tasks.
+
+**Key Features:**
+- Chat completion using large language models
+- Sentiment and emotion classification
+- Multilingual translation
+- Simple CLI interface with task-based flags
+- Easy setup with Hugging Face API token
 
 ### [Motivational Speaker](./motivational-speaker/README.md)
 
@@ -58,8 +69,8 @@ A command-line tool that translates any given content into a specified language 
 ## Common Technologies
 
 All projects are built with:
-- Go 1.24+
-- OpenAI API integration
+- Go 1.24+ and/or Node.js 18+
+- API integration (OpenAI, Hugging Face)
 - Environment-based configuration
 - Command-line interfaces
 
@@ -78,6 +89,11 @@ Each project has its own README with detailed instructions for setup and usage. 
 ai-practice-projects/
 ├── README.md                      # This file
 ├── .gitignore                     # Git ignore file
+├── hugging-face-inference/        # Hugging Face Inference (Node.js)
+│   ├── README.md                  # Project documentation
+│   ├── index.js                   # Main application code
+│   ├── .env                       # Environment variables template
+│   └── package.json               # Project metadata
 ├── motivational-speaker/          # Motivational Speaker project
 │   ├── README.md                  # Project documentation
 │   ├── main.go                    # Main application code
