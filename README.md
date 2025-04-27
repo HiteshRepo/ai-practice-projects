@@ -44,6 +44,16 @@ A command-line tool that checks if text content is safe or contains potentially 
 - Supports multiple input types: single-line text, multi-line text, URLs, and files
 - Provides clear feedback on content safety
 
+### [Pollyglot](./pollyglot/README.md)
+
+A command-line tool that translates any given content into a specified language using OpenAI's GPT-3.5-turbo model.
+
+**Key Features:**
+- Translates text to any target language using OpenAI's GPT-3.5-turbo
+- Simple CLI interface with flags for content and target language
+- Secure API key management via environment variables
+- Easily extensible and written in idiomatic Go
+
 ## Common Technologies
 
 All projects are built with:
@@ -90,6 +100,12 @@ ai-practice-projects/
 │   └── openai/                    # OpenAI client implementation
 │       └── client.go
 ├── content-moderator/             # Content Moderator project
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── sample.env                 # Environment variables template
+│   └── openai/                    # OpenAI client implementation
+│       └── client.go
+├── pollyglot/                     # Pollyglot translation project
 │   ├── README.md                  # Project documentation
 │   ├── main.go                    # Main application code
 │   ├── sample.env                 # Environment variables template
