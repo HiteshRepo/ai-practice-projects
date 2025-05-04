@@ -99,3 +99,15 @@ if (task == "translate") {
 
     console.log(response) // { translation_text: 'एक एआई इंजीनियर होने के लिए एक रोमांचक समय है' }
 }
+
+if (task == "text-to-speech") {
+    const text = "It's an exciting time to be an A.I. engineer."
+    const model = "facebook/mms-tts"
+
+    const response = await hf.textToSpeech({
+        inputs: text,
+        model,
+    })
+
+    console.log(response)
+}
