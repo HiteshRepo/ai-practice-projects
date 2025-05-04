@@ -1,112 +1,52 @@
-# Hugging Face Inference Demo
+# Hugging Face Inference UI
 
-A Node.js project demonstrating the use of the [Hugging Face Inference API](https://huggingface.co/docs/huggingface.js/inference/README) for chat completion, sentiment classification, and translation tasks.
+This project demonstrates how to use the Hugging Face Inference API for text-to-speech conversion with a simple web UI.
 
-## Features
+## CORS Issue Fix
 
-- **Chat Completion**: Generate conversational responses using large language models.
-- **Text Classification**: Perform sentiment analysis and emotion detection on text.
-- **Translation**: Translate text between languages using state-of-the-art models.
+The original implementation had CORS issues because it was trying to call the Hugging Face API directly from the browser. This has been fixed by:
 
-## Requirements
+1. Creating a Node.js/Express server that acts as a proxy between the UI and the Hugging Face API
+2. Modifying the UI code to use the proxy endpoint instead of directly calling the API
+3. Adding proper CORS headers to the server
 
-- Node.js v18 or higher
-- A Hugging Face API token ([create one here](https://huggingface.co/settings/tokens))
+## Setup
 
-## Installation
-
-1. Clone this repository or copy the `hugging-face-inference` directory.
-2. Install dependencies:
-
-   ```bash
+1. Install dependencies:
+   ```
    npm install
    ```
 
-3. Create a `.env` file in the project root with your Hugging Face token:
-
+2. Set your Hugging Face API token as an environment variable:
    ```
-   HF_TOKEN=your_huggingface_token_here
+   export HF_TOKEN=your_hugging_face_token
    ```
 
-## Usage
+## Running the Application
 
-Run the script with the `-task` flag to specify which functionality to use.
-
-### 1. Chat Completion
-
-Generates a conversational response to a prompt.
-
-```bash
-node index.js -task chat-completion
+Start the server:
+```
+npm run server
 ```
 
-**Example Output:**
+This will:
+1. Start the Express server on port 3000 (or the port specified in the PORT environment variable)
+2. Serve the static files from the `ui` directory
+3. Create an API endpoint at `/api/text-to-speech` that proxies requests to the Hugging Face API
+
+Then open your browser and navigate to:
 ```
-{
-  role: 'assistant',
-  content: 'Inference refers to the process of applying a trained machine learning model to make predictions, classifications, or decisions based on new and unseen data...'
-}
-```
-
-### 2. Sentiment Classification
-
-Classifies text as positive or negative, and detects nuanced emotions.
-
-```bash
-node index.js -task classify
+http://localhost:3000
 ```
 
-**Example Output:**
-```
-positive
-negative
-[
-  { label: 'sadness', score: 0.77 },
-  { label: 'surprise', score: 0.12 },
-  ...
-]
-```
+## How It Works
 
-### 3. Translation
+1. The UI makes a POST request to the local server endpoint `/api/text-to-speech` with the text and model parameters
+2. The server forwards the request to the Hugging Face API using your API token
+3. The server receives the audio data from the Hugging Face API and sends it back to the UI
+4. The UI creates a blob URL from the audio data and sets it as the source of the audio element
 
-Translates a sample English sentence to Hindi.
-
-```bash
-node index.js -task translate
-```
-
-**Example Output:**
-```
-{ translation_text: 'एक एआई इंजीनियर होने के लिए एक रोमांचक समय है' }
-```
-
-## Models Used
-
-- **Chat Completion**: `HuggingFaceH4/zephyr-7b-beta`
-- **Sentiment Classification**: `cardiffnlp/twitter-roberta-base-sentiment-latest`
-- **Emotion Detection**: `j-hartmann/emotion-english-distilroberta-base`
-- **Translation**: `facebook/mbart-large-50-many-to-many-mmt`
-
-## Project Structure
-
-```
-.
-├── .env                # Environment variables (your HF_TOKEN)
-├── index.js            # Main script
-├── package.json        # Project metadata and dependencies
-├── package-lock.json   # Dependency lock file
-└── node_modules/       # Installed dependencies
-```
-
-## Notes
-
-- Ensure your Hugging Face token has the necessary permissions for inference.
-- You can modify the sample texts and models in `index.js` to experiment with other tasks or models.
-
-## License
-
-ISC
-
----
-
-**Author:** hiteshrepo
+This approach avoids CORS issues because:
+- The UI is served from the same origin as the API endpoint
+- The server handles the cross-origin request to the Hugging Face API
+- The server adds the necessary CORS headers to allow the UI to access the API
