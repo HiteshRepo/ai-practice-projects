@@ -1,4 +1,6 @@
 import { HfInference } from '@huggingface/inference'
+import fs from 'fs'
+import path from 'path'
 
 const taskFlagIdx = process.argv.indexOf('-task');
 
@@ -102,6 +104,7 @@ if (task == "translate") {
 
 if (task == "text-to-speech") {
     const text = "It's an exciting time to be an A.I. engineer."
+    // This and similar models lack 'inference providers' in hugging-face.
     const model = "facebook/mms-tts"
 
     const response = await hf.textToSpeech({
@@ -110,4 +113,57 @@ if (task == "text-to-speech") {
     })
 
     console.log(response)
+}
+
+// Helper function to convert Blob to Base64
+async function blobToBase64(blob) {
+    const arrayBuffer = await blob.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return buffer.toString('base64');
+}
+
+// Helper function to save Base64 image to file
+function saveBase64Image(base64Data, outputPath, mimeType = 'image/jpeg') {
+    // Remove the data URL prefix if present (e.g., "data:image/jpeg;base64,")
+    const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, '');
+    
+    // Create buffer from base64 data
+    const imageBuffer = Buffer.from(base64Image, 'base64');
+    
+    // Ensure directory exists
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    
+    // Write buffer to file
+    fs.writeFileSync(outputPath, imageBuffer);
+    console.log(`Image saved to ${outputPath}`);
+    
+    return outputPath;
+}
+
+if (task == "color-photo") {
+    const blackAndWhiteImage = "./resources/black-n-white.jpg"
+    const blackAndWhiteImageResponse = await fetch(blackAndWhiteImage)
+    const blackAndWhiteImageBlob = await blackAndWhiteImageResponse.blob()
+    // This and similar models lack 'inference providers' in hugging-face.
+    const model = "ghoskno/Color-Canny-Controlnet-model"
+
+    try {
+        const newImageBlob = await hf.imageToImage({
+            model: model,
+            inputs: blackAndWhiteImageBlob
+        })
+        
+        const newImageBase64 = await blobToBase64(newImageBlob)
+        
+        // Save the base64 image to a file
+        const outputPath = "./resources/colored-output.jpg"
+        const savedImagePath = saveBase64Image(newImageBase64, outputPath)
+        
+        console.log(`Successfully converted and saved image to: ${savedImagePath}`)
+    } catch (error) {
+        console.error("Error processing image:", error)
+    }
 }
