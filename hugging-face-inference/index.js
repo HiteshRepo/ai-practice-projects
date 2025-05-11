@@ -144,7 +144,7 @@ function saveBase64Image(base64Data, outputPath, mimeType = 'image/jpeg') {
 }
 
 if (task == "color-photo") {
-    const blackAndWhiteImage = "./resources/black-n-white.jpg"
+    const blackAndWhiteImage = "./color-photo-ui/black-n-white.jpg"
     const blackAndWhiteImageResponse = await fetch(blackAndWhiteImage)
     const blackAndWhiteImageBlob = await blackAndWhiteImageResponse.blob()
     // This and similar models lack 'inference providers' in hugging-face.
@@ -153,13 +153,19 @@ if (task == "color-photo") {
     try {
         const newImageBlob = await hf.imageToImage({
             model: model,
-            inputs: blackAndWhiteImageBlob
+            inputs: blackAndWhiteImageBlob,
+            // https://huggingface.co/ghoskno/Color-Canny-Controlnet-model
+            parameters: {
+                prompt: oldImageDescription,
+                negative_prompt: "Black and white photo. text, bad anatomy, blurry, low quality",
+                strength: 0.85,
+            },
         })
         
         const newImageBase64 = await blobToBase64(newImageBlob)
         
         // Save the base64 image to a file
-        const outputPath = "./resources/colored-output.jpg"
+        const outputPath = "./color-photo-ui/colored-output.jpg"
         const savedImagePath = saveBase64Image(newImageBase64, outputPath)
         
         console.log(`Successfully converted and saved image to: ${savedImagePath}`)
