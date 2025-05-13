@@ -68,13 +68,31 @@ A command-line tool that translates any given content into a specified language 
 
 ### [Vector Embeddings](./vector-embeddings/README.md)
 
-A Go project that generates vector embeddings for text data (e.g., podcast descriptions) using OpenAI and stores them in a Supabase database with vector support.
+A Go project that generates vector embeddings for text data (e.g., podcast descriptions) using OpenAI and stores them in a Supabase database with vector support. Supports both inserting new embeddings and performing semantic search over stored documents.
 
 **Key Features:**
 - Generates embeddings for a set of podcast descriptions using OpenAI's API
 - Stores embeddings and original text in a Supabase table with vector support
+- Supports semantic search over stored documents using vector similarity
 - Includes SQL for table setup and idiomatic Go project structure
 - Environment-based configuration for easy setup
+- Secure handling of API keys via environment variables (never commit real secrets)
+
+**Usage Examples:**
+- Insert sample embeddings:
+  ```bash
+  cd vector-embeddings
+  go run main.go
+  # or explicitly:
+  go run main.go -action=insert
+  ```
+- Perform semantic search:
+  ```bash
+  go run main.go -action=search -query="What can I listen to in half an hour?"
+  ```
+
+**Security Note:**  
+Never commit your real `.env` file or share your actual API keys. Use `sample.env` as a template.
 
 ## Common Technologies
 
