@@ -18,4 +18,5 @@ var Podcasts = []string{
 const (
 	DocumentsTblName              = "documents"
 	DocumentsTblContentColumnName = "content"
+	MatchDocumentsFunctionName    = "match_documents"
 )

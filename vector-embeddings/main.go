@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
+	"strings"
 
 	"vector-embeddings/constants"
 	"vector-embeddings/models"
@@ -29,15 +31,70 @@ func main() {
 		log.Fatalln("failed to parse env variables", errors.Wrap(err, "missing required env"))
 	}
 
+	actionFlag := flag.String("action", "insert", "Allowed values: insert, search. Default: search")
+	searchQueryFlag := flag.String("query", "", "text for semantic search")
+	flag.Parse()
+
+	action := ""
+	if actionFlag != nil {
+		action = *actionFlag
+	}
+
+	query := ""
+	if searchQueryFlag != nil {
+		query = *searchQueryFlag
+	}
+
 	openaiClient := openaipkg.NewOpenAiClient(envs.OpenApiKey)
 	supabaseClient := supabase.NewClient(envs.SupabaseProjectUrl, envs.SupabaseApiKey)
 
-	vectors := getEmbeddings(ctx, openaiClient, constants.Podcasts)
-	allDocsMap := fetchAllDocumentsMap(supabaseClient)
+	switch action {
+	case "insert":
+		// go run main.go
 
-	for _, v := range vectors {
-		insertDocIfNotPresent(supabaseClient, v, allDocsMap)
+		vectors := getEmbeddings(ctx, openaiClient, constants.Podcasts)
+		allDocsMap := fetchAllDocumentsMap(supabaseClient)
+
+		for _, v := range vectors {
+			insertDocIfNotPresent(supabaseClient, v, allDocsMap)
+		}
+	case "search":
+		// go run main.go -action=search -query="Jammin' in the Big Easy"
+		// go run main.go -action=search -query="Decoding orca calls"
+		// go run main.go -action=search -query="What can I listen to in half an hour?"
+
+		if len(strings.TrimSpace(query)) == 0 {
+			log.Fatalln("query cannot be empty for semantic search")
+		}
+
+		res, err := openaiClient.Embeddings.New(ctx, openai.EmbeddingNewParams{
+			Model: "text-embedding-ada-002", // Default length of 1536 embeddings of array
+			Input: openai.EmbeddingNewParamsInputUnion{
+				OfString: openai.String(query),
+			},
+		})
+		if err != nil {
+			log.Fatalln("failed to generate embeddings", err)
+		}
+
+		if res != nil && len(res.Data) > 0 {
+			matchedDocs, err := supabase.InvokeMatchDocumentsFunction(supabaseClient, res.Data[0].Embedding)
+			if err != nil {
+				log.Fatalln("failed to match documents for query", err)
+			}
+
+			if len(matchedDocs) == 0 {
+				log.Fatalln("mo matching docs found")
+			}
+
+			for _, md := range matchedDocs {
+				log.Printf("matched doc: %s, \nsimilarity score: %v\n", md.Content, md.Similarity)
+			}
+		} else {
+			log.Fatalln("failed to generate embeddings for query", err)
+		}
 	}
+
 }
 
 func insertDocIfNotPresent(
