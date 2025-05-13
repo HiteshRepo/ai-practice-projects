@@ -66,6 +66,16 @@ A command-line tool that translates any given content into a specified language 
 - Secure API key management via environment variables
 - Easily extensible and written in idiomatic Go
 
+### [Vector Embeddings](./vector-embeddings/README.md)
+
+A Go project that generates vector embeddings for text data (e.g., podcast descriptions) using OpenAI and stores them in a Supabase database with vector support.
+
+**Key Features:**
+- Generates embeddings for a set of podcast descriptions using OpenAI's API
+- Stores embeddings and original text in a Supabase table with vector support
+- Includes SQL for table setup and idiomatic Go project structure
+- Environment-based configuration for easy setup
+
 ## Common Technologies
 
 All projects are built with:
@@ -128,6 +138,15 @@ ai-practice-projects/
 │   ├── sample.env                 # Environment variables template
 │   └── openai/                    # OpenAI client implementation
 │       └── client.go
+├── vector-embeddings/             # Vector Embeddings project
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── sample.env                 # Environment variables template
+│   ├── openai/                    # OpenAI client implementation
+│   ├── supabase/                  # Supabase client and DB operations
+│   ├── constants/                 # Constants and sample data
+│   ├── models/                    # Data models
+│   └── queries/                   # SQL scripts for DB setup
 └── prompts/                       # Additional prompt resources
 ```
 
