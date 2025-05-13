@@ -10,6 +10,7 @@ import (
 	"vector-embeddings/supabase"
 
 	"github.com/caarlos0/env"
+	supa "github.com/nedpals/supabase-go"
 	"github.com/openai/openai-go"
 	"github.com/pkg/errors"
 )
@@ -32,8 +33,30 @@ func main() {
 	supabaseClient := supabase.NewClient(envs.SupabaseProjectUrl, envs.SupabaseApiKey)
 
 	vectors := getEmbeddings(ctx, openaiClient, constants.Podcasts)
+	allDocsMap := fetchAllDocumentsMap(supabaseClient)
 
 	for _, v := range vectors {
+		insertDocIfNotPresent(supabaseClient, v, allDocsMap)
+	}
+}
+
+func insertDocIfNotPresent(
+	supabaseClient *supa.Client,
+	v models.Vector,
+	allDocsMap map[string]any,
+) {
+	res, err := supabase.ReadDocumentByContent(constants.DocumentsTblName, supabaseClient, v.Content)
+	if err != nil {
+		log.Fatalf("failed to find embeddings for: '%s'\n: %v", v.Content, err)
+	}
+
+	found := len(res) > 0
+
+	if len(res) == 0 {
+		_, found = allDocsMap[v.Content]
+	}
+
+	if !found {
 		res, err := supabase.InsertDocument(constants.DocumentsTblName, supabaseClient, v)
 		if err != nil {
 			log.Fatalf("failed to insert embeddings for: '%s'\n: %v", v.Content, err)
@@ -41,6 +64,20 @@ func main() {
 
 		log.Printf("len of docs: %d\n", len(res))
 	}
+}
+
+func fetchAllDocumentsMap(supabaseClient *supa.Client) map[string]any {
+	allDocs, err := supabase.ReadDocuments(constants.DocumentsTblName, supabaseClient)
+	if err != nil {
+		log.Fatalf("failed to find embeddings for: '%s'\n: %v", "random content", err)
+	}
+
+	allDocsMap := make(map[string]any)
+	for _, d := range allDocs {
+		allDocsMap[d.Content] = nil
+	}
+
+	return allDocsMap
 }
 
 func getEmbeddings(
