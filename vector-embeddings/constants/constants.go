@@ -16,5 +16,6 @@ var Podcasts = []string{
 
 // Supabase
 const (
-	DocumentsTblName = "documents"
+	DocumentsTblName              = "documents"
+	DocumentsTblContentColumnName = "content"
 )
