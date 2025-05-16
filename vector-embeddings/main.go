@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"strings"
 
@@ -14,7 +15,17 @@ import (
 	"github.com/caarlos0/env"
 	supa "github.com/nedpals/supabase-go"
 	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/packages/param"
 	"github.com/pkg/errors"
+)
+
+const (
+	SystemMessage   = `You are an enthusiastic podcast expert who loves recommending podcasts to people. You will be given two pieces of information - some context about podcasts episodes and a question. Your main job is to formulate a short answer to the question using the provided context. If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer." Please do not make up the answer.`
+	UserMessageTmpl = `Context: %s, Question: %s`
+
+	Temperature      = 1.1
+	PresencePenalty  = 0.0
+	FrequencyPenalty = 0.0
 )
 
 type envvars struct {
@@ -78,18 +89,84 @@ func main() {
 		}
 
 		if res != nil && len(res.Data) > 0 {
-			matchedDocs, err := supabase.InvokeMatchDocumentsFunction(supabaseClient, res.Data[0].Embedding)
+			matchedDocs, err := supabase.InvokeMatchDocumentsFunction(supabaseClient, res.Data[0].Embedding, 2)
 			if err != nil {
 				log.Fatalln("failed to match documents for query", err)
 			}
 
 			if len(matchedDocs) == 0 {
-				log.Fatalln("mo matching docs found")
+				log.Fatalln("no matching docs found")
 			}
 
 			for _, md := range matchedDocs {
 				log.Printf("matched doc: %s, \nsimilarity score: %v\n", md.Content, md.Similarity)
 			}
+		} else {
+			log.Fatalln("failed to generate embeddings for query", err)
+		}
+
+	case "search-n-chat":
+		// go run main.go -action=search-n-chat -query="Jammin' in the Big Easy"
+		// go run main.go -action=search-n-chat -query="Decoding orca calls"
+		// go run main.go -action=search-n-chat -query="What can I listen to in half an hour?"
+		// go run main.go -action=search-n-chat -query="An episode Elon Musk would enjoy"
+
+		if len(strings.TrimSpace(query)) == 0 {
+			log.Fatalln("query cannot be empty for semantic search & chat")
+		}
+
+		res, err := openaiClient.Embeddings.New(ctx, openai.EmbeddingNewParams{
+			Model: "text-embedding-ada-002", // Default length of 1536 embeddings of array
+			Input: openai.EmbeddingNewParamsInputUnion{
+				OfString: openai.String(query),
+			},
+		})
+		if err != nil {
+			log.Fatalln("failed to generate embeddings", err)
+		}
+
+		if res != nil && len(res.Data) > 0 {
+			matchedDocs, err := supabase.InvokeMatchDocumentsFunction(supabaseClient, res.Data[0].Embedding, 1)
+			if err != nil {
+				log.Fatalln("failed to match documents for query", err)
+			}
+
+			if len(matchedDocs) != 1 {
+				log.Fatalln("invalid number of matching docs found")
+			}
+
+			messages := []openai.ChatCompletionMessageParamUnion{
+				{
+					OfSystem: &openai.ChatCompletionSystemMessageParam{
+						Content: openai.ChatCompletionSystemMessageParamContentUnion{
+							OfString: openai.String(SystemMessage),
+						},
+					},
+				},
+			}
+
+			messages = append(messages, openai.ChatCompletionMessageParamUnion{
+				OfUser: &openai.ChatCompletionUserMessageParam{
+					Content: openai.ChatCompletionUserMessageParamContentUnion{
+						OfString: openai.String(fmt.Sprintf(UserMessageTmpl, matchedDocs[0].Content, query)),
+					},
+				},
+			})
+
+			chatResp, err := openaiClient.Chat.Completions.New(
+				ctx,
+				openai.ChatCompletionNewParams{
+					Messages:         messages,
+					Model:            openai.ChatModelGPT4,
+					Temperature:      param.NewOpt(Temperature),
+					PresencePenalty:  param.NewOpt(PresencePenalty),
+					FrequencyPenalty: param.NewOpt(FrequencyPenalty),
+				})
+			if err != nil {
+				log.Fatalln("failed to generate podcast response", err)
+			}
+
+			log.Println(chatResp.Choices[0].Message.Content)
 		} else {
 			log.Fatalln("failed to generate embeddings for query", err)
 		}

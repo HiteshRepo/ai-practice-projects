@@ -65,13 +65,14 @@ func ReadDocuments(
 func InvokeMatchDocumentsFunction(
 	dbClient *supa.Client,
 	embedding []float64,
+	numMatches int,
 ) ([]db.MatchedDocument, error) {
 	var results []db.MatchedDocument
 
 	err := dbClient.DB.Rpc(constants.MatchDocumentsFunctionName, map[string]any{
 		"query_embedding": embedding,
 		"match_threshold": 0.50,
-		"match_count":     1,
+		"match_count":     numMatches,
 	}).Execute(&results)
 	if err != nil {
 		return nil, err
