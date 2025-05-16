@@ -246,6 +246,8 @@ func main() {
 		// go run main.go -action=query-movie -query="Which movie can I take my child to?" -matches=3
 		// go run main.go -action=query-movie -query="I feel like having a good laugh"
 		// go run main.go -action=query-movie -query="Which movie will give me an adrenaline rush?" -matches=3
+		// go run main.go -action=query-movie -query="What's the highest rated movie?"
+		// go run main.go -action=query-movie -query="The movie with that actor from Castaway"
 
 		if len(strings.TrimSpace(query)) == 0 {
 			log.Fatalln("query cannot be empty for semantic search & chat")
