@@ -7,7 +7,7 @@ func SplitDocuments(
 	document string) ([]string, error) {
 	recurCh := textsplitter.NewRecursiveCharacter(
 		textsplitter.WithSeparators([]string{splitter}),
-		textsplitter.WithChunkSize(150),
+		textsplitter.WithChunkSize(250),
 		textsplitter.WithChunkOverlap(15),
 	)
 

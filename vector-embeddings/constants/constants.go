@@ -114,6 +114,24 @@ The Menu: 2022 | R | 1h 47m | 7.2 rating
 
 M3GAN: 2022 | PG-13 | 1h 42m | 6.4 rating
 The horror/sci-fi movie 'M3GAN' deals with Gemma, a skilled roboticist who designs a life-like doll named M3GAN that can play, teach, and protect children. She gifts a prototype to her eight-year-old niece. The doll begins to take on a life of its own, resulting in unforeseen consequences. Gerard Johnstone directed M3GAN, which stars Allison Williams, Violet McGraw and Ronny Chieng.
+
+Glass Onion: 2022 | PG-13 | 2h 19m | 7.1 rating
+In the comedic film 'Glass Onion', five long-time friends get invited to the Greek island home of billionaire Miles Bron. All five know Bron from way back and owe him their current wealth, fame, and careers. The main event is a murder-weekend game with Bron to be the victim. In reality, they all have reasons to kill him. Also invited is Benoit Blanc, the world's greatest detective. Rian Johnson directed Glass Onion and it stars Daniel Craig, Edward Norton and Kate Hudson.
+
+The Super Mario Bros. Movie: 2023 | PG | 1h 32m | 7.1 rating
+'The Super Mario Bros. Movie': While working underground to fix a water main, Brooklyn plumbers and brothers Mario and Luigi are transported through a mysterious pipe to a magical new world. But when the siblings are separated, an epic adventure begins to save a captured princess. The Super Mario Bros. Movie is an animated adventure comedy directed by Aaron Horvath, Michael Jelenic and Pierre Leduc. It's voiced by the actors Chris Pratt, Anya Taylor-Joy and Charlie Day.
+
+A Haunting in Venice: 2023 | PG-13 | 1h 43m | 6.8 rating
+In 'A Haunting in Venice,' a post-WWII crime drama set in Venice, a retired detective attends a seance. Following a guest's murder, he's compelled to solve the mystery. The film's director is Kenneth Branagh, and stars Kenneth Branagh, Michelle Yeoh and Jamie Dornan.
+
+Blue Beetle: 2023 | PG-13 | 2h 7m | 6.7 rating
+In The action-adventure film 'Blue Beetle', Jaime Reyes suddenly finds himself possessing an ancient relic of alien biotechnology called the Scarab. When the Scarab chooses Jaime to be its symbiotic host, he's bestowed with an incredible suit of armor capable of extraordinary and unpredictable powers, forever changing his destiny as he becomes the superhero Blue Beetle. The film stars Xolo Maridueña, Bruna Marquezine and Becky G, and Angel Manuel Soto is the director.
+
+Expend4bles: 2023 | R | 1h 43m | 5.0 rating
+'Expend4bles' is an action movie featuring an elite team of mercenaries known as "The Expendables." They are the world's last resort for missions deemed too perilous for others. With a formidable arsenal and unmatched combat skills, they tackle high-stakes assignments, displaying their courage and unity. Directed by Scott Waugh, Expend4bles is a thrilling ride, starring Jason Statham, 50 Cent, and Megan Fox.
+
+Asteroid City: 2023 | PG-13 | 1h 45m | 6.6 rating
+Chronicling the journey of a writer's renowned fictional tale, 'Asteroid City' unveils the transformation of a mourning father. He takes his technology-fixated family to the quaint Asteroid City for a junior stargazing competition. But there, his perspective on life is irrevocably changed. Wes Anderson directed the comedic drama Asteroid City, starring Jason Schwartzman, Scarlett Johansson, and Tom Hanks.
 `
 
 // Supabase
@@ -122,5 +140,6 @@ const (
 	DocumentsTblContentColumnName = "content"
 	MatchDocumentsFunctionName    = "match_documents"
 
-	MoviesTblName = "movies"
+	MoviesTblName           = "movies"
+	MatchMoviesFunctionName = "match_movies"
 )

@@ -62,14 +62,15 @@ func ReadDocuments(
 }
 
 // https://supabase.com/docs/guides/ai/vector-columns#querying-a-vector--embedding
-func InvokeMatchDocumentsFunction(
+func InvokeMatchFunction(
 	dbClient *supa.Client,
+	functionName string,
 	embedding []float64,
 	numMatches int,
 ) ([]db.MatchedDocument, error) {
 	var results []db.MatchedDocument
 
-	err := dbClient.DB.Rpc(constants.MatchDocumentsFunctionName, map[string]any{
+	err := dbClient.DB.Rpc(functionName, map[string]any{
 		"query_embedding": embedding,
 		"match_threshold": 0.50,
 		"match_count":     numMatches,
