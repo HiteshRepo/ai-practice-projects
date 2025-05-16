@@ -129,6 +129,17 @@ A Go project for generating, storing, and searching vector embeddings for text d
 **Security Note:**  
 Never commit your real `.env` file or share your actual API keys. Only share `sample.env` as a template.
 
+### [Movie Chatbot](./movie-chatbot/README.md)
+
+A command-line chatbot that recommends movies and answers movie-related questions using OpenAI's GPT-4 and Supabase for semantic search. The bot maintains conversation history and can answer follow-up questions based on previous interactions.
+
+**Key Features:**
+- Movie recommendations based on user queries
+- Answers follow-up and context-based questions (e.g., "What is my name?", "Which movies have you recommended?")
+- Remembers conversation history for personalized responses
+- Uses OpenAI GPT-4 and Supabase for semantic search and context retrieval
+- Simple CLI interface
+
 ## Common Technologies
 
 All projects are built with:
@@ -200,6 +211,16 @@ ai-practice-projects/
 │   ├── constants/                 # Constants and sample data
 │   ├── models/                    # Data models
 │   └── queries/                   # SQL scripts for DB setup
+├── movie-chatbot/                 # Movie Chatbot project
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── .env                       # Environment variables template
+│   ├── go.mod                     # Go module definition
+│   ├── go.sum                     # Go dependencies lockfile
+│   ├── constants/                 # Project constants
+│   ├── models/                    # Data models
+│   ├── openai/                    # OpenAI client implementation
+│   └── supabase/                  # Supabase client and vector search
 └── prompts/                       # Additional prompt resources
 ```
 
