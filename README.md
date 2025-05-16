@@ -68,31 +68,66 @@ A command-line tool that translates any given content into a specified language 
 
 ### [Vector Embeddings](./vector-embeddings/README.md)
 
-A Go project that generates vector embeddings for text data (e.g., podcast descriptions) using OpenAI and stores them in a Supabase database with vector support. Supports both inserting new embeddings and performing semantic search over stored documents.
+A Go project for generating, storing, and searching vector embeddings for text data (e.g., podcast descriptions, movie details) using OpenAI and Supabase. Supports semantic search, recommendations, and AI-powered applications requiring vector representations of text.
 
 **Key Features:**
-- Generates embeddings for a set of podcast descriptions using OpenAI's API
-- Stores embeddings and original text in a Supabase table with vector support
-- Supports semantic search over stored documents using vector similarity
-- Includes SQL for table setup and idiomatic Go project structure
-- Environment-based configuration for easy setup
-- Secure handling of API keys via environment variables (never commit real secrets)
+- Generate embeddings for text data (podcasts, movies) using OpenAI's API.
+- Store embeddings and original text in Supabase tables with vector support.
+- Perform semantic search over stored documents or movies using vector similarity.
+- Chat-based Q&A over documents or movies using OpenAI GPT-4.
+- Written in Go with idiomatic project structure and environment-based configuration.
+
+**Setup:**
+1. Clone the repository and enter the project directory:
+   ```bash
+   git clone <repo-url>
+   cd vector-embeddings
+   ```
+2. Install dependencies (requires Go 1.24+):
+   ```bash
+   go mod tidy
+   ```
+3. Copy `sample.env` to `.env` and fill in your OpenAI and Supabase credentials:
+   ```bash
+   cp sample.env .env
+   ```
+   - `OPEN_API_KEY` — Your OpenAI API key
+   - `SUPABASE_PROJECT_URL` — Your Supabase project URL
+   - `SUPABASE_API_KEY` — Your Supabase API key (service role or anon, with insert/search permissions)
+
+4. Prepare Supabase by creating the required tables using the SQL scripts in `vector-embeddings/queries/`:
+   - `create_documents_table.sql`
+   - `create_movies_table.sql`
 
 **Usage Examples:**
-- Insert sample embeddings:
+- Insert podcast embeddings:
   ```bash
-  cd vector-embeddings
-  go run main.go
-  # or explicitly:
-  go run main.go -action=insert
+  go run main.go -action=insert-docs
   ```
-- Perform semantic search:
+- Semantic search (podcasts):
   ```bash
-  go run main.go -action=search -query="What can I listen to in half an hour?"
+  go run main.go -action=search-docs -query="What can I listen to in half an hour?"
+  ```
+- Semantic search + chat (podcasts):
+  ```bash
+  go run main.go -action=search-n-chat-docs -query="An episode Elon Musk would enjoy"
+  ```
+- Insert movie embeddings (chunked):
+  ```bash
+  go run main.go -action=chunk-n-insert-movies
+  ```
+- Semantic search + chat (movies):
+  ```bash
+  go run main.go -action=query-movie -query="Which movie can I take my child to?" -matches=3
   ```
 
+**Command-Line Flags:**
+- `-action` (required): One of `insert-docs`, `search-docs`, `search-n-chat-docs`, `chunk-n-insert-movies`, `query-movie`
+- `-query` (required for search/chat actions): Query string for semantic search
+- `-matches` (optional for `query-movie`): Number of top matches to return (default: 1)
+
 **Security Note:**  
-Never commit your real `.env` file or share your actual API keys. Use `sample.env` as a template.
+Never commit your real `.env` file or share your actual API keys. Only share `sample.env` as a template.
 
 ## Common Technologies
 

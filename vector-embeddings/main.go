@@ -24,7 +24,8 @@ const (
 	PodcastsSystemMessage = `You are an enthusiastic podcast expert who loves recommending podcasts to people. You will be given two pieces of information - some context about podcasts episodes and a question. Your main job is to formulate a short answer to the question using the provided context. If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer." Please do not make up the answer.`
 	UserMessageTmpl       = `Context: %s, Question: %s`
 
-	MoviesSystemMessage = `You are an enthusiastic movie expert who loves recommending movies to people. You will be given two pieces of information - some context about podcasts episodes and a question. Your main job is to formulate a short answer to the question using the provided context. If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer." Please do not make up the answer.`
+	MoviesSystemMessage        = `You are an enthusiastic movie expert who loves recommending movies to people. You will be given two pieces of information - some context about podcasts episodes and a question. Your main job is to formulate a short answer to the question using the provided context. If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer." Please do not make up the answer.`
+	UserMessageMovieSearchTmpl = `Context: %s, Question: %s, NumberOfMovies: %d`
 
 	Temperature      = 1.1
 	PresencePenalty  = 0.0
@@ -55,6 +56,10 @@ func main() {
 		"query",
 		"",
 		"text for semantic search")
+	matchesFlag := flag.Int(
+		"matches",
+		1,
+		"number of matches to be used in your query")
 	flag.Parse()
 
 	action := ""
@@ -71,8 +76,9 @@ func main() {
 		query = *searchQueryFlag
 	}
 
-	if len(query) == 0 {
-		log.Fatal("mandatory flag `query` is not provided")
+	matches := -1
+	if matchesFlag != nil {
+		matches = *matchesFlag
 	}
 
 	openaiClient := openaipkg.NewOpenAiClient(envs.OpenApiKey)
@@ -80,7 +86,7 @@ func main() {
 
 	switch action {
 	case "insert-docs":
-		// go run main.go
+		// go run main.go -action=insert-docs
 
 		allDocsMap := fetchExistingRows(supabaseClient, constants.DocumentsTblName)
 
@@ -103,9 +109,9 @@ func main() {
 		}
 
 	case "search-docs":
-		// go run main.go -action=search -query="Jammin' in the Big Easy"
-		// go run main.go -action=search -query="Decoding orca calls"
-		// go run main.go -action=search -query="What can I listen to in half an hour?"
+		// go run main.go -action=search-docs -query="Jammin' in the Big Easy"
+		// go run main.go -action=search-docs -query="Decoding orca calls"
+		// go run main.go -action=search-docs -query="What can I listen to in half an hour?"
 
 		if len(strings.TrimSpace(query)) == 0 {
 			log.Fatalln("query cannot be empty for semantic search")
@@ -122,7 +128,7 @@ func main() {
 		}
 
 		if res != nil && len(res.Data) > 0 {
-			matchedDocs, err := supabase.InvokeMatchDocumentsFunction(supabaseClient, res.Data[0].Embedding, 2)
+			matchedDocs, err := supabase.InvokeMatchFunction(supabaseClient, constants.MatchDocumentsFunctionName, res.Data[0].Embedding, 2)
 			if err != nil {
 				log.Fatalln("failed to match documents for query", err)
 			}
@@ -139,10 +145,10 @@ func main() {
 		}
 
 	case "search-n-chat-docs":
-		// go run main.go -action=search-n-chat -query="Jammin' in the Big Easy"
-		// go run main.go -action=search-n-chat -query="Decoding orca calls"
-		// go run main.go -action=search-n-chat -query="What can I listen to in half an hour?"
-		// go run main.go -action=search-n-chat -query="An episode Elon Musk would enjoy"
+		// go run main.go -action=search-n-chat-docs -query="Jammin' in the Big Easy"
+		// go run main.go -action=search-n-chat-docs -query="Decoding orca calls"
+		// go run main.go -action=ssearch-n-chat-docs -query="What can I listen to in half an hour?"
+		// go run main.go -action=search-n-chat-docs -query="An episode Elon Musk would enjoy"
 
 		if len(strings.TrimSpace(query)) == 0 {
 			log.Fatalln("query cannot be empty for semantic search & chat")
@@ -159,7 +165,7 @@ func main() {
 		}
 
 		if res != nil && len(res.Data) > 0 {
-			matchedDocs, err := supabase.InvokeMatchDocumentsFunction(supabaseClient, res.Data[0].Embedding, 1)
+			matchedDocs, err := supabase.InvokeMatchFunction(supabaseClient, constants.MatchDocumentsFunctionName, res.Data[0].Embedding, 1)
 			if err != nil {
 				log.Fatalln("failed to match documents for query", err)
 			}
@@ -234,6 +240,76 @@ func main() {
 
 			log.Printf("inserting (%s) embeddings finished\n...", movieVector[0].Content)
 			log.Printf("len of docs: %d\n", len(res))
+		}
+
+	case "query-movie":
+		// go run main.go -action=query-movie -query="Which movie can I take my child to?" -matches=3
+		// go run main.go -action=query-movie -query="I feel like having a good laugh"
+		// go run main.go -action=query-movie -query="Which movie will give me an adrenaline rush?" -matches=3
+
+		if len(strings.TrimSpace(query)) == 0 {
+			log.Fatalln("query cannot be empty for semantic search & chat")
+		}
+
+		res, err := openaiClient.Embeddings.New(ctx, openai.EmbeddingNewParams{
+			Model: "text-embedding-ada-002", // Default length of 1536 embeddings of array
+			Input: openai.EmbeddingNewParamsInputUnion{
+				OfString: openai.String(query),
+			},
+		})
+		if err != nil {
+			log.Fatalln("failed to generate embeddings", err)
+		}
+
+		if res != nil && len(res.Data) > 0 {
+			matchedDocs, err := supabase.InvokeMatchFunction(supabaseClient, constants.MatchMoviesFunctionName, res.Data[0].Embedding, matches)
+			if err != nil {
+				log.Fatalln("failed to match movies for query", err)
+			}
+
+			if len(matchedDocs) < matches {
+				log.Fatalln("invalid number of matching movies found")
+			}
+
+			combinedMatchResult := ""
+			for _, md := range matchedDocs {
+				combinedMatchResult = fmt.Sprintf("%s\n%s", combinedMatchResult, md.Content)
+			}
+
+			messages := []openai.ChatCompletionMessageParamUnion{
+				{
+					OfSystem: &openai.ChatCompletionSystemMessageParam{
+						Content: openai.ChatCompletionSystemMessageParamContentUnion{
+							OfString: openai.String(MoviesSystemMessage),
+						},
+					},
+				},
+			}
+
+			messages = append(messages, openai.ChatCompletionMessageParamUnion{
+				OfUser: &openai.ChatCompletionUserMessageParam{
+					Content: openai.ChatCompletionUserMessageParamContentUnion{
+						OfString: openai.String(fmt.Sprintf(UserMessageMovieSearchTmpl, combinedMatchResult, query, matches)),
+					},
+				},
+			})
+
+			chatResp, err := openaiClient.Chat.Completions.New(
+				ctx,
+				openai.ChatCompletionNewParams{
+					Messages:         messages,
+					Model:            openai.ChatModelGPT4,
+					Temperature:      param.NewOpt(Temperature),
+					PresencePenalty:  param.NewOpt(PresencePenalty),
+					FrequencyPenalty: param.NewOpt(FrequencyPenalty),
+				})
+			if err != nil {
+				log.Fatalln("failed to generate movies response", err)
+			}
+
+			log.Println(chatResp.Choices[0].Message.Content)
+		} else {
+			log.Fatalln("failed to generate embeddings for query", err)
 		}
 	}
 
