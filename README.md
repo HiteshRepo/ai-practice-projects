@@ -140,6 +140,16 @@ A command-line chatbot that recommends movies and answers movie-related question
 - Uses OpenAI GPT-4 and Supabase for semantic search and context retrieval
 - Simple CLI interface
 
+### [Pop Choice](./pop-choice/README.md)
+
+A command-line tool that recommends movies based on user interests using OpenAI embeddings and Supabase as a vector database. Supports both single-user and multi-user modes for personalized or group recommendations.
+
+**Key Features:**
+- AI-powered movie recommendations using OpenAI embeddings
+- Stores and queries movie embeddings with Supabase
+- Single-user and multi-user interactive CLI modes
+- Easy setup and environment-based configuration
+
 ## Common Technologies
 
 All projects are built with:
@@ -221,6 +231,17 @@ ai-practice-projects/
 │   ├── models/                    # Data models
 │   ├── openai/                    # OpenAI client implementation
 │   └── supabase/                  # Supabase client and vector search
+├── pop-choice/                    # Pop Choice movie recommender
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── .env                       # Environment variables template
+│   ├── go.mod                     # Go module definition
+│   ├── go.sum                     # Go dependencies lockfile
+│   ├── constants/                 # Project constants
+│   ├── models/                    # Data models
+│   ├── openai/                    # OpenAI client implementation
+│   ├── supabase/                  # Supabase client and DB operations
+│   └── queries/                   # SQL scripts for DB setup
 └── prompts/                       # Additional prompt resources
 ```
 

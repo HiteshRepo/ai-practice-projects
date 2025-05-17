@@ -322,7 +322,7 @@ func fetchExistingRows(
 	tableName string) map[string]any {
 	allDocs, err := supabase.ReadDocuments(tableName, supabaseClient)
 	if err != nil {
-		log.Fatalf("failed to find embeddings for: '%s'\n: %v", "random content", err)
+		log.Fatalf("failed to fetch embeddings from: '%s'\n: %v", tableName, err)
 	}
 
 	allDocsMap := make(map[string]any)
