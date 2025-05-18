@@ -150,6 +150,17 @@ A command-line tool that recommends movies based on user interests using OpenAI 
 - Single-user and multi-user interactive CLI modes
 - Easy setup and environment-based configuration
 
+### [reAct](./reAct/README.md)
+
+A Go-based command-line tool that leverages OpenAI's API to generate personalized activity ideas based on your current location and weather. Supports multiple versions of suggestion logic and is easily extensible.
+
+**Key Features:**
+- AI-powered activity suggestions using OpenAI
+- Weather and location-aware recommendations
+- Switchable logic versions (`v1`, `v2`)
+- Simple CLI interface with flags for version and query
+- Environment-based configuration
+
 ## Common Technologies
 
 All projects are built with:
@@ -242,6 +253,18 @@ ai-practice-projects/
 │   ├── openai/                    # OpenAI client implementation
 │   ├── supabase/                  # Supabase client and DB operations
 │   └── queries/                   # SQL scripts for DB setup
+├── reAct/                         # reAct activity suggestion CLI (Go + OpenAI)
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── .env                       # Environment variables template
+│   ├── go.mod                     # Go module definition
+│   ├── go.sum                     # Go dependencies lockfile
+│   ├── constants/                 # Project constants
+│   ├── models/                    # Data models
+│   ├── openai/                    # OpenAI client implementation
+│   ├── tools/                     # Utility tools
+│   ├── utils/                     # Helper utilities
+│   └── versions/                  # Versioned suggestion logic
 └── prompts/                       # Additional prompt resources
 ```
 
