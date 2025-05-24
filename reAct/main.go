@@ -25,8 +25,8 @@ func main() {
 
 	versionFlag := flag.String(
 		"version",
-		"v2",
-		"Allowed values: v1, v2.")
+		"v3",
+		"Allowed values: v1, v2, v3.")
 	queryFlag := flag.String(
 		"query",
 		"",
@@ -45,12 +45,13 @@ func main() {
 
 	openaiClient := openaipkg.NewOpenAiClient(envs.OpenApiKey)
 
-	// go run main.go -version=v2 -query="Give me a list of activity ideas based on my current location and weather"
-	// go run main.go -version=v1/v2 -query="Give me a list of activity ideas based on my current location and weather"
+	// go run main.go -version=v1/v2/v3 -query="Give me a list of activity ideas based on my current location and weather"
 	switch version {
 	case "v1":
 		versions.V1(ctx, openaiClient, query)
 	case "v2":
 		versions.V2(ctx, openaiClient, query)
+	case "v3":
+		versions.V3(ctx, openaiClient, query)
 	}
 }

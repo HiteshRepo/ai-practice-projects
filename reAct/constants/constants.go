@@ -40,6 +40,10 @@ const (
 	You then output:
 	Answer: <Suggested activities based on sunny weather that are highly specific to New York City and surrounding areas.>
 	`
+
+	BriefReActSystemPrompt = `You are a helpful AI agent. 
+	Give highly specific answers based on the information you're provided.
+	Prefer to gather information with the tools provided to you rather than giving basic, generic answers.`
 )
 
 const (
