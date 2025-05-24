@@ -3,6 +3,7 @@ package versions
 import (
 	"context"
 	"log"
+	"react/utils"
 
 	"github.com/openai/openai-go"
 )
@@ -10,6 +11,7 @@ import (
 func V1(
 	ctx context.Context,
 	openaiClient openai.Client,
+	_ *utils.WeatherStack,
 	query string,
 ) {
 	resp, err := openaiClient.Chat.Completions.New(

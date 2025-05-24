@@ -49,3 +49,15 @@ const (
 const (
 	MaxIterations = 5
 )
+
+const (
+	IPToLocationAPI     = "http://ip-api.com/json"
+	WeatherStackAPITmpl = `https://api.weatherstack.com/current?access_key=%s&query="%s"`
+)
+
+var FetchIPAPIs = []string{
+	"https://ipapi.co/ip",
+	"https://api.ipify.org",
+	"https://icanhazip.com",
+	"https://checkip.amazonaws.com",
+}

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"react/constants"
-	"react/models"
 	"react/tools"
 	"react/utils"
 
@@ -34,6 +33,7 @@ PLAN:
 func V2(
 	ctx context.Context,
 	openaiClient openai.Client,
+	wsClient *utils.WeatherStack,
 	query string,
 ) {
 	messages := []openai.ChatCompletionMessageParamUnion{}
@@ -94,7 +94,7 @@ func V2(
 			log.Fatalln(err)
 		}
 
-		actionResponse := invokeValidAction(action)
+		actionResponse := tools.InvokeValidAction(wsClient, action)
 
 		assistantMessage = openai.ChatCompletionMessageParamUnion{
 			OfAssistant: &openai.ChatCompletionAssistantMessageParam{
@@ -106,44 +106,6 @@ func V2(
 
 		messages = append(messages, assistantMessage)
 	}
-}
-
-func invokeValidAction(action utils.Action) string {
-	switch action.FunctionName {
-	case "getCurrentWeather":
-		log.Println("calling function getCurrentWeather")
-
-		if len(action.Arguments) != 1 {
-			log.Fatalln("invalid number of arguments for getCurrentWeather action")
-		}
-
-		weather := tools.
-			GetNewHardCodedTool().
-			GetCurrentWeather(models.Location{Address: action.Arguments[0]})
-
-		return weather.ToString()
-
-	case "getLocation":
-		log.Println("calling function getLocation")
-
-		if len(action.Arguments) != 1 {
-			log.Fatalln("invalid number of arguments for getLocation action")
-		}
-
-		if !utils.IsEmpty(action.Arguments[0]) {
-			log.Fatalln("getLocation action requires no args")
-		}
-
-		loc := tools.
-			GetNewHardCodedTool().
-			GetLocation()
-
-		return loc.ToString()
-	}
-
-	log.Fatalf("unknown action invoked: %s", action.FunctionName)
-
-	return ""
 }
 
 /*

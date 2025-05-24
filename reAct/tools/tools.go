@@ -1,10 +1,12 @@
 package tools
 
 import (
-	"math/rand"
+	"encoding/json"
+	"log"
 	"react/models"
-	"strings"
-	"time"
+	"react/utils"
+
+	"github.com/openai/openai-go"
 )
 
 var (
@@ -23,52 +25,79 @@ var (
 )
 
 type Tooler interface {
-	GetCurrentWeather(models.Location) models.Weather
-	GetLocation() models.Location
+	GetCurrentWeather(models.Location) (models.Weather, error)
+	GetLocation() (models.Location, error)
 }
 
-type HardCodedTool struct{}
+func InvokeValidAction(
+	wsClient *utils.WeatherStack,
+	action models.Action) string {
+	switch action.FunctionName {
+	case "getCurrentWeather":
+		log.Println("calling function getCurrentWeather")
 
-func GetNewHardCodedTool() Tooler {
-	return &HardCodedTool{}
-}
-
-func (t *HardCodedTool) GetCurrentWeather(loc models.Location) models.Weather {
-	switch {
-	case strings.Contains(strings.ToLower(loc.Address), "bhubaneswar"):
-		return models.Weather{
-			Temperature: "35",
-			Unit:        "C",
-			Forecast:    "Sunny",
+		if len(action.Arguments) != 1 {
+			log.Fatalln("invalid number of arguments for getCurrentWeather action")
 		}
 
-	case strings.Contains(strings.ToLower(loc.Address), "oslo"):
-		return models.Weather{
-			Temperature: "23",
-			Unit:        "C",
-			Forecast:    "Rainy",
+		weather, err := GetApiBasedTool(wsClient).GetCurrentWeather(models.Location{Address: action.Arguments[0]})
+		if err != nil {
+			log.Fatalln("failed to get weather: ", err)
 		}
+
+		return weather.ToString()
+
+	case "getLocation":
+		log.Println("calling function getLocation")
+
+		if len(action.Arguments) != 1 {
+			log.Fatalln("invalid number of arguments for getLocation action")
+		}
+
+		if !utils.IsEmpty(action.Arguments[0]) {
+			log.Fatalln("getLocation action requires no args")
+		}
+
+		loc, err := GetApiBasedTool(wsClient).GetLocation()
+		if err != nil {
+			log.Fatalln("failed to get location: ", err)
+		}
+
+		return loc.ToString()
 	}
 
-	return models.Weather{
-		Temperature: "15",
-		Unit:        "C",
-		Forecast:    "Windy",
-	}
+	log.Fatalf("unknown action invoked: %s", action.FunctionName)
+
+	return ""
 }
 
-var locations = []models.Location{
-	{Address: "oslo"},
-	{Address: "Delta Square, Bhubaneswar, Odisha, India"},
-}
+func ActionsFromResponseToolCalls(
+	toolCalls []openai.ChatCompletionMessageToolCall) ([]models.Action, error) {
+	actions := make([]models.Action, 0)
 
-func (t *HardCodedTool) GetLocation() models.Location {
-	rand.Seed(time.Now().UnixNano())
-	randomNum := rand.Intn(2)
+	for _, tool := range toolCalls {
+		action := models.Action{
+			FunctionName: tool.Function.Name,
+			Arguments:    make([]string, 0),
+			ToolCallID:   tool.ID,
+		}
 
-	if randomNum >= 0 && randomNum < len(locations) {
-		return locations[randomNum]
+		switch tool.Function.Name {
+		case "getCurrentWeather":
+			weatherArg := models.WeatherInputs{}
+			err := json.Unmarshal([]byte(tool.Function.Arguments), &weatherArg)
+			if err != nil {
+				return nil, err
+			}
+
+			action.Arguments = append(action.Arguments, weatherArg.Address)
+
+		case "getLocation":
+			action.Arguments = append(action.Arguments, "NONE")
+		}
+
+		actions = append(actions, action)
 	}
 
-	return models.Location{Address: "Texas"}
+	return actions, nil
 }

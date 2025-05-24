@@ -43,6 +43,7 @@ var toolsParams = []openai.ChatCompletionToolParam{
 func V3(
 	ctx context.Context,
 	openaiClient openai.Client,
+	wsClient *utils.WeatherStack,
 	query string) {
 	messages := []openai.ChatCompletionMessageParamUnion{}
 
@@ -85,10 +86,13 @@ func V3(
 
 		switch resp.Choices[0].FinishReason {
 		case "tool_calls":
-			actions := utils.ActionsFromResponseToolCalls(resp.Choices[0].Message.ToolCalls)
+			actions, err := tools.ActionsFromResponseToolCalls(resp.Choices[0].Message.ToolCalls)
+			if err != nil {
+				log.Fatalln(err)
+			}
 
 			for _, action := range actions {
-				actionResponse := invokeValidAction(action)
+				actionResponse := tools.InvokeValidAction(wsClient, action)
 
 				toolMessage := openai.ChatCompletionMessageParamUnion{
 					OfTool: &openai.ChatCompletionToolMessageParam{

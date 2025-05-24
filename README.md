@@ -161,6 +161,25 @@ A Go-based command-line tool that leverages OpenAI's API to generate personalize
 - Simple CLI interface with flags for version and query
 - Environment-based configuration
 
+**Setup:**
+1. Enter the project directory:
+   ```bash
+   cd reAct
+   ```
+2. Install dependencies (requires Go 1.24+):
+   ```bash
+   go mod tidy
+   ```
+3. Create a `.env` file and add your API keys:
+   ```
+   OPEN_API_KEY=your-openai-api-key
+   WEATHER_STACK_API_KEY=your-weatherstack-api-key
+   ```
+   Or export them in your shell before running the CLI.
+
+**Security Note:**  
+Never commit your real `.env` file or share your actual API keys. Only share `.env` as a template if needed.
+
 ## Common Technologies
 
 All projects are built with:
