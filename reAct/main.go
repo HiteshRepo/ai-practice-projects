@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	openaipkg "react/openai"
+	"react/utils"
 	"react/versions"
 
 	"github.com/caarlos0/env"
@@ -12,7 +13,8 @@ import (
 )
 
 type envvars struct {
-	OpenApiKey string `env:"OPEN_API_KEY"`
+	OpenApiKey         string `env:"OPEN_API_KEY"`
+	WeatherStackApiKey string `env:"WEATHER_STACK_API_KEY"`
 }
 
 func main() {
@@ -44,14 +46,15 @@ func main() {
 	}
 
 	openaiClient := openaipkg.NewOpenAiClient(envs.OpenApiKey)
+	wsClient := utils.GetWeatherStackClient(envs.WeatherStackApiKey)
 
 	// go run main.go -version=v1/v2/v3 -query="Give me a list of activity ideas based on my current location and weather"
 	switch version {
 	case "v1":
-		versions.V1(ctx, openaiClient, query)
+		versions.V1(ctx, openaiClient, wsClient, query)
 	case "v2":
-		versions.V2(ctx, openaiClient, query)
+		versions.V2(ctx, openaiClient, wsClient, query)
 	case "v3":
-		versions.V3(ctx, openaiClient, query)
+		versions.V3(ctx, openaiClient, wsClient, query)
 	}
 }

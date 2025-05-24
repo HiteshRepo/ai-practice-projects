@@ -74,8 +74,9 @@ go run main.go -version=v3 -query="Give me a list of activity ideas based on my 
 ## Environment Variables
 
 - `OPEN_API_KEY`: Your OpenAI API key (required).
+- `WEATHER_STACK_API_KEY`: Your WeatherStack API key (required for weather-based suggestions).
 
-You can set this in a `.env` file or export it in your shell.
+You can set these in a `.env` file or export them in your shell.
 
 ## Dependencies
 

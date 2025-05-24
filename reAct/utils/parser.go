@@ -2,43 +2,35 @@ package utils
 
 import (
 	"fmt"
+	"react/models"
 	"regexp"
 	"strings"
-
-	"github.com/openai/openai-go"
 )
 
 var (
 	ErrNoActionFound = fmt.Errorf("action not found in assistant response")
 )
 
-type Action struct {
-	FunctionName string
-	Arguments    []string
-	ToolCallID   string
-}
-
 func IsEmpty(arg string) bool {
-	return arg == "{}" ||
-		len(arg) == 0 ||
+	return len(arg) == 0 ||
 		len(strings.TrimSpace(arg)) == 0 ||
-		strings.ToUpper(strings.TrimSpace(arg)) == `"NONE"`
+		strings.Contains(strings.ToUpper(strings.TrimSpace(arg)), "NONE")
 }
 
 const actionRegex = `Action:\s*([^:]+):\s*(.+)`
 
 func ActionExtractor(
 	input string,
-) (Action, error) {
+) (models.Action, error) {
 	actionRegex := regexp.MustCompile(actionRegex)
 	matches := actionRegex.FindStringSubmatch(input)
 
 	if len(matches) == 0 {
-		return Action{}, ErrNoActionFound
+		return models.Action{}, ErrNoActionFound
 	}
 
 	if len(matches) < 3 {
-		return Action{}, fmt.Errorf("incorrect format of action in assistant response")
+		return models.Action{}, fmt.Errorf("incorrect format of action in assistant response")
 	}
 
 	functionName := strings.TrimSpace(matches[1])
@@ -48,24 +40,8 @@ func ActionExtractor(
 		arguments = append(arguments, strings.TrimSpace(matches[i]))
 	}
 
-	return Action{
+	return models.Action{
 		FunctionName: functionName,
 		Arguments:    arguments,
 	}, nil
-}
-
-func ActionsFromResponseToolCalls(toolCalls []openai.ChatCompletionMessageToolCall) []Action {
-	actions := make([]Action, 0)
-
-	for _, tool := range toolCalls {
-		action := Action{
-			FunctionName: tool.Function.Name,
-			Arguments:    []string{tool.Function.Arguments},
-			ToolCallID:   tool.ID,
-		}
-
-		actions = append(actions, action)
-	}
-
-	return actions
 }
