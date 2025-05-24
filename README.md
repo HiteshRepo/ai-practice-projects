@@ -46,6 +46,38 @@ A command-line tool that generates images from text descriptions using OpenAI's 
 - Supports customizable image parameters (size, style)
 - Optional Studio Ghibli-style image generation
 
+### [Film Fusion](./film-fusion/README.md)
+
+A command-line tool that generates AI-powered art inspired by your favorite movies and a chosen art style, using OpenAI's GPT-4 and DALL-E 3.
+
+**Key Features:**
+- Generates a creative, single-line prompt based on a movie name and art style
+- Uses OpenAI's GPT-4 for imaginative prompt generation
+- Creates vivid images with DALL-E 3 based on the generated prompt
+- Supports a variety of art styles (art deco, impressionism, cyberpunk, and more)
+- Simple command-line interface
+
+**Setup:**
+1. Enter the project directory:
+   ```bash
+   cd film-fusion
+   ```
+2. Install dependencies (requires Go 1.24+):
+   ```bash
+   go mod tidy
+   ```
+3. Set your OpenAI API key in a `.env` file:
+   ```
+   export OPEN_API_KEY=your-openai-api-key
+   ```
+
+**Usage Example:**
+```bash
+go run main.go -film-name="Inception" -art-style=cyberpunk
+```
+
+For more details and art style options, see the [Film Fusion README](./film-fusion/README.md).
+
 ### [Content Moderator](./content-moderator/README.md)
 
 A command-line tool that checks if text content is safe or contains potentially harmful material using OpenAI's moderation API.
@@ -203,6 +235,21 @@ Each project has its own README with detailed instructions for setup and usage. 
 ai-practice-projects/
 ├── README.md                      # This file
 ├── .gitignore                     # Git ignore file
+├── content-moderator/             # Content Moderator project
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── sample.env                 # Environment variables template
+│   └── openai/                    # OpenAI client implementation
+│       └── client.go
+├── film-fusion/                   # Film Fusion project
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── go.mod                     # Go module definition
+│   ├── go.sum                     # Go dependencies lockfile
+│   ├── .env                       # Environment variables template
+│   ├── loader/                    # Loading animation and progress display
+│   ├── openai/                    # OpenAI client logic
+│   └── utils/                     # Utility functions
 ├── hugging-face-inference/        # Hugging Face Inference (Node.js)
 │   ├── README.md                  # Project documentation
 │   ├── index.js                   # Main application code
