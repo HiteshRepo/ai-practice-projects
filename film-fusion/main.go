@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	MovieArtTextSystemMessage = "You are a movie enthusiast with great writing skills. When provided with a movie name and art style, generate a single line exiting message using the context."
-	UserQueryTmpl             = "MovieName: %s, ArtStyle: %s"
+	MovieArtTextSystemMessage      = "You are a movie enthusiast with great writing skills. When provided with a movie name and art style, generate a single line exiting message using the context."
+	MovieArtImageSystemMessageTmpl = `An imaginative poster inspired by the movie "%s", rendered in the "%s" art style.`
+	UserQueryTmpl                  = "MovieName: %s, ArtStyle: %s"
 )
 
 var ArtStyles = []string{
@@ -48,6 +49,7 @@ type envvars struct {
 }
 
 // go run main.go -film-name="Saving Private Ryan" -art-style=expressionism
+// go run main.go -film-name="Inception" -art-style=cyberpunk
 func main() {
 	ctx := context.Background()
 
@@ -116,7 +118,7 @@ func main() {
 	imageResp, err := openaiClient.Images.Generate(
 		ctx,
 		openai.ImageGenerateParams{
-			Prompt:         content,
+			Prompt:         fmt.Sprintf(MovieArtImageSystemMessageTmpl, filmName, artStyle),
 			Model:          "dall-e-3", // default: dall-e-2
 			ResponseFormat: openai.ImageGenerateParamsResponseFormatURL,
 			Size:           openai.ImageGenerateParamsSize1024x1792,
