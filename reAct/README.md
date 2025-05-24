@@ -47,6 +47,7 @@ reAct/
    - Create a `.env` file or export your OpenAI API key in your shell:
      ```
      export OPEN_API_KEY=your-openai-api-key
+     export WEATHER_STACK_API_KEY=your-weather-stack-api-key
      ```
    - **Do not commit your real API key to version control.**
 
