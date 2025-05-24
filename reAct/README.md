@@ -1,13 +1,19 @@
 # reAct
 
-reAct is a Go-based command-line tool that leverages OpenAI's API to generate personalized activity ideas based on your current location and weather. It supports multiple versions of activity suggestion logic and is easily extensible.
+reAct is a Go-based command-line tool that leverages OpenAI's API to generate personalized activity ideas based on your current location and weather. It supports multiple versions of activity suggestion logic (currently `v1`, `v2`, and `v3`) and is easily extensible.
 
 ## Features
 
 - **AI-powered suggestions:** Uses OpenAI to generate creative activity ideas.
 - **Weather and location aware:** Tailors suggestions to your current context.
-- **Versioned logic:** Switch between different suggestion algorithms (`v1`, `v2`).
+- **Versioned logic:** Switch between different suggestion algorithms (`v1`, `v2`, `v3`). Default is `v3`.
 - **Configurable via environment variables.**
+
+## Version Overview
+
+- **v1:** Basic activity suggestions using OpenAI, based on user query and weather.
+- **v2:** Improved context handling and more personalized suggestions by refining prompt structure and response parsing.
+- **v3:** Enhanced activity recommendations with advanced parsing, better error handling, and more robust logic for diverse scenarios.
 
 ## Directory Structure
 
@@ -38,27 +44,31 @@ reAct/
    ```
 
 3. **Set up your environment variables:**
-   - Copy `.env` and set your OpenAI API key:
+   - Create a `.env` file or export your OpenAI API key in your shell:
      ```
      export OPEN_API_KEY=your-openai-api-key
      ```
-   - You can also set this variable in your shell profile.
+   - **Do not commit your real API key to version control.**
 
 ## Usage
 
 Run the CLI with your desired version and query:
 
 ```bash
-go run main.go -version=v2 -query="Give me a list of activity ideas based on my current location and weather"
+go run main.go -version=v3 -query="Give me a list of activity ideas based on my current location and weather"
 ```
 
-- `-version`: Selects the logic version (`v1` or `v2`). Default is `v2`.
+- `-version`: Selects the logic version (`v1`, `v2`, or `v3`). Default is `v3`.
 - `-query`: Your prompt or question (e.g., about activities, weather, etc.).
 
-### Example
+### Examples
 
 ```bash
-go run main.go -version=v1 -query="What can I do today in New York if it's raining?"
+go run main.go -version=v1 -query="Give me a list of activity ideas based on my current location and weather"
+```
+
+```bash
+go run main.go -version=v3 -query="Give me a list of activity ideas based on my current location and weather"
 ```
 
 ## Environment Variables

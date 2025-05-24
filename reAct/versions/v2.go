@@ -8,7 +8,6 @@ import (
 	"react/models"
 	"react/tools"
 	"react/utils"
-	"strings"
 
 	"github.com/openai/openai-go"
 )
@@ -131,7 +130,7 @@ func invokeValidAction(action utils.Action) string {
 			log.Fatalln("invalid number of arguments for getLocation action")
 		}
 
-		if strings.ToUpper(strings.TrimSpace(action.Arguments[0])) != `"NONE"` {
+		if !utils.IsEmpty(action.Arguments[0]) {
 			log.Fatalln("getLocation action requires no args")
 		}
 

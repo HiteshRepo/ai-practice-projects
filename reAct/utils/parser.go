@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/openai/openai-go"
 )
 
 var (
@@ -13,6 +15,14 @@ var (
 type Action struct {
 	FunctionName string
 	Arguments    []string
+	ToolCallID   string
+}
+
+func IsEmpty(arg string) bool {
+	return arg == "{}" ||
+		len(arg) == 0 ||
+		len(strings.TrimSpace(arg)) == 0 ||
+		strings.ToUpper(strings.TrimSpace(arg)) == `"NONE"`
 }
 
 const actionRegex = `Action:\s*([^:]+):\s*(.+)`
@@ -42,4 +52,20 @@ func ActionExtractor(
 		FunctionName: functionName,
 		Arguments:    arguments,
 	}, nil
+}
+
+func ActionsFromResponseToolCalls(toolCalls []openai.ChatCompletionMessageToolCall) []Action {
+	actions := make([]Action, 0)
+
+	for _, tool := range toolCalls {
+		action := Action{
+			FunctionName: tool.Function.Name,
+			Arguments:    []string{tool.Function.Arguments},
+			ToolCallID:   tool.ID,
+		}
+
+		actions = append(actions, action)
+	}
+
+	return actions
 }

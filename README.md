@@ -152,12 +152,12 @@ A command-line tool that recommends movies based on user interests using OpenAI 
 
 ### [reAct](./reAct/README.md)
 
-A Go-based command-line tool that leverages OpenAI's API to generate personalized activity ideas based on your current location and weather. Supports multiple versions of suggestion logic and is easily extensible.
+A Go-based command-line tool that leverages OpenAI's API to generate personalized activity ideas based on your current location and weather. Supports multiple versions of suggestion logic (`v1`, `v2`, and `v3`), with `v3` as the default, and is easily extensible.
 
 **Key Features:**
 - AI-powered activity suggestions using OpenAI
 - Weather and location-aware recommendations
-- Switchable logic versions (`v1`, `v2`)
+- Switchable logic versions (`v1`, `v2`, `v3`) with `v3` as the default
 - Simple CLI interface with flags for version and query
 - Environment-based configuration
 
