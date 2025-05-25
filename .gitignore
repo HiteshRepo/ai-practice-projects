@@ -3,4 +3,6 @@ prompts/
 crawler-py/
 test/
 tests/
+test-files/
 node_modules/
+.DS_Store
