@@ -212,6 +212,47 @@ A Go-based command-line tool that leverages OpenAI's API to generate personalize
 **Security Note:**  
 Never commit your real `.env` file or share your actual API keys. Only share `.env` as a template if needed.
 
+### [Multimodality](./multimodality/README.md)
+
+A Go CLI tool for generating, editing, and analyzing images using OpenAI's API. Supports image generation from text prompts, image inpainting (completion), and image vision (analysis) tasks.
+
+**Key Features:**
+- Image Generation from text prompts using OpenAI's API
+- Image Completion (inpainting) with original and masked images
+- Image Vision: analyze and answer questions about images
+- Simple CLI interface with action-based flags
+- Environment-based configuration
+
+**Setup:**
+1. Enter the project directory:
+   ```bash
+   cd multimodality
+   ```
+2. Install dependencies (requires Go 1.24+):
+   ```bash
+   go mod tidy
+   ```
+3. Set your OpenAI API key in a `.env` file:
+   ```
+   export OPEN_API_KEY=your-openai-api-key
+   ```
+
+**Usage Examples:**
+- Generate an image:
+  ```bash
+  go run main.go -action=image-gen -image-desc="An astronaut riding a bicycle on the moon"
+  ```
+- Complete (inpaint) an image:
+  ```bash
+  go run main.go -action=image-complete -image-desc="Ancient Konark temple dedicated for Lord Surya (Sun) before it was destroyed." -image-path=./test-files/image.png -masked-image-path=./test-files/masked.png
+  ```
+- Image vision (analyze image):
+  ```bash
+  go run main.go -action=image-vision -query="What did the Ancient Konark temple dedicated for Lord Surya (Sun) look like before it was destroyed." -image-path=./test-files/image.png
+  ```
+
+For more details, see the [Multimodality README](./multimodality/README.md).
+
 ## Common Technologies
 
 All projects are built with:
@@ -308,6 +349,14 @@ ai-practice-projects/
 │   ├── models/                    # Data models
 │   ├── openai/                    # OpenAI client implementation
 │   └── supabase/                  # Supabase client and vector search
+├── multimodality/                 # Multimodality image generation & vision CLI
+│   ├── README.md                  # Project documentation
+│   ├── main.go                    # Main application code
+│   ├── go.mod                     # Go module definition
+│   ├── go.sum                     # Go dependencies lockfile
+│   ├── .env                       # Environment variables template
+│   ├── openai/                    # OpenAI client and image logic
+│   └── test-files/                # Example/test images
 ├── pop-choice/                    # Pop Choice movie recommender
 │   ├── README.md                  # Project documentation
 │   ├── main.go                    # Main application code
